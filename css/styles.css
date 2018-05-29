@@ -369,6 +369,11 @@ nav h1 a {
   list-style-type: none;
   margin: 15px;
   padding: 25px 25px 25px;
+  transition: all 0.5s ease-out;
+}
+
+#reviews-list li:focus, #reviews-list li:hover  {
+  background-color: #f5cc9b;
 }
 
 #reviews-list li p {
