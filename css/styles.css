@@ -168,6 +168,10 @@ nav h1 a {
   width: 200px;
 }
 
+.filter-options select:hover, .filter-options select:focus {
+  outline: 4px solid orange;
+}
+
 /* ====================== Restaurant Listing ====================== */
 
 #restaurants-list {
