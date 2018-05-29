@@ -228,6 +228,13 @@ nav h1 a {
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
+  transition: all 0.3s ease-in;
+}
+
+#restaurants-list li a:focus, #restaurants-list li a:hover {
+  background-color: #fff;
+  color: orange;
+  outline: 4px solid orange;
 }
 
 /* ====================== Restaurant Details ====================== */
