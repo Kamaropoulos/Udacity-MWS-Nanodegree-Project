@@ -26,8 +26,10 @@ a {
 }
 
 a:hover, a:focus {
-  color: #3397db;
+  color: #333;
+  background-color: #d9d9d9;
   text-decoration: none;
+  outline: none;
 }
 
 a img {
@@ -46,6 +48,11 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 #maincontent {
   background-color: #f3f3f3;
   min-height: 100%;
+}
+
+#page-title {
+  padding: 15px 15px;
+  transition: all 0.5s ease-out;
 }
 
 #footer {
