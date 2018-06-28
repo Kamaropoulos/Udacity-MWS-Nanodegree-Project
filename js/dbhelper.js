@@ -155,6 +155,41 @@ class DBHelper {
     return (`/img/${restaurant.photograph}`);
   }
 
+  static imageUrl(img) {
+    return (`/img/${img}`);
+  }
+
+  /**
+   * Restaurant image filename.
+   */
+  static imageFilename(restaurant) {
+    return restaurant.photograph;
+  }
+
+  /**
+   * Generate responsive image name.
+   */
+  static responsiveImageName(fileName, width) {
+    let imgExtension = fileName.substr(fileName.lastIndexOf('.'))
+    let imgName = fileName.substr(0, fileName.lastIndexOf('.')) || fileName;
+    return this.imageUrl(imgName + "_" + width + imgExtension);
+  }
+
+  /**
+   * Generate sourceset.
+   */
+  static generateSrcSet(restaurant){
+    let img = this.imageFilename(restaurant);
+    let img1x, img2x, img25x;
+    [img1x, img2x, img25x] = [this.responsiveImageName(img, "1x"),
+                      this.responsiveImageName(img, "2x"),
+                      this.responsiveImageName(img, "2.5x")
+                     ];
+    let srcset = `${img1x} 1x, ${img2x} 2x, ${img25x} 2.5x`;
+    console.log(srcset);
+    return srcset;
+  }
+
   /**
    * Map marker for a restaurant.
    */
