@@ -186,7 +186,6 @@ class DBHelper {
                       this.responsiveImageName(img, "2.5x")
                      ];
     let srcset = `${img1x} 1x, ${img2x} 2x, ${img25x} 2.5x`;
-    console.log(srcset);
     return srcset;
   }
 
