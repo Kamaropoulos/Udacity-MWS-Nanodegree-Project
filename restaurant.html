@@ -24,7 +24,7 @@
     <!-- Beginning main -->
     <main id="maincontent">
       <!-- Beginning breadcrumb -->
-      <ul id="breadcrumb">
+        <ul id="breadcrumb">
         <li>
           <a href="/">Home</a>
         </li>
@@ -35,22 +35,22 @@
   <!-- End header -->
 
   <!-- Beginning map -->
-  <section id="map-container">
+  <section id="map-container" aria-label="Google Maps" role="application">
     <div id="map"></div>
   </section>
   <!-- End map -->
 
   <!-- Beginning restaurant -->
-  <section id="restaurant-container">
-    <h1 id="restaurant-name"></h1>
+  <section id="restaurant-container" aria-label="Restaurant Information">
+    <h1 id="restaurant-name" aria-label="Restaurant Name"></h1>
     <div id="restaurant-header">
       <div id="restaurant-img-div">
         <img id="restaurant-img">
-        <p id="restaurant-cuisine"></p>
+        <p id="restaurant-cuisine" aria-label="Cuisine"></p>
       </div>
       <div id="restaurant-address-div">
-        <p id="restaurant-address"></p>
-        <table id="restaurant-hours"></table>
+        <p id="restaurant-address" aria-label="Address"></p>
+        <table id="restaurant-hours" aria-label="Hours"></table>
       </div>
     </div>
 
