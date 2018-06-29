@@ -65,11 +65,11 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   image.className = 'restaurant-img';
   if (!restaurant.photograph) {
     image.src = "/img/no-photo.png";
-    image.alt = "Image of " + restaurant.name + " was not found.";
+    image.alt = "Image of " + restaurant.name + "restaurant was not found.";
     image.style = "background-color: transparent;";
   } else {
     image.src = DBHelper.responsiveImageName(restaurant.photograph, "1x");
-    image.alt = "Image of " + restaurant.name;
+    image.alt = "Image of " + restaurant.name + "restaurant.";
     image.srcset = DBHelper.generateSrcSet(restaurant);
   }
 
