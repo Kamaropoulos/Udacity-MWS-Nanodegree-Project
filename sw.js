@@ -1,11 +1,15 @@
 self.addEventListener('install', function(event){
     var urlsToCache = [
         '/',
-        '/restaurant.html',
+        'index.html',
+        'restaurant.html',
         'css/styles.css',
         'js/main.js',
         'js/dbhelper.js',
-        'data/restaurants.json',
+        'js/restaurant_info.js',
+        'img/no-photo.png',
+        'manifest.json',
+        'http://' + self.location.hostname + ':1337/restaurants', 
         'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
         'https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxK.woff2',
         'https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4WxKOzY.woff2',
