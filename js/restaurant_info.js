@@ -14,6 +14,12 @@ window.initMap = () => {
         center: restaurant.latlng,
         scrollwheel: false
       });
+
+      // Google Maps Lighthouse Accesibility issue workaround
+      google.maps.event.addListenerOnce(map, 'idle', () => {
+        document.getElementsByTagName('iframe')[0].title = "Google Maps";
+      });
+
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
