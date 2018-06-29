@@ -142,9 +142,16 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
-  image.src = DBHelper.responsiveImageName(restaurant.photograph, "1x");
-  image.srcset = DBHelper.generateSrcSet(restaurant);
-  image.alt = "Image of " + restaurant.name;
+  if (!restaurant.photograph) {
+    image.src = "/img/no-photo.png";
+    image.alt = "Image of " + restaurant.name + " was not found.";
+    image.style = "background-color: transparent;";
+  } else {
+    image.src = DBHelper.responsiveImageName(restaurant.photograph, "1x");
+    image.alt = "Image of " + restaurant.name;
+    image.srcset = DBHelper.generateSrcSet(restaurant);
+  }
+  
   li.append(image);
 
   const name = document.createElement('h2');

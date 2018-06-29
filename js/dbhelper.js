@@ -11,7 +11,7 @@ class DBHelper {
     // const port = 8000 // Change this to your server port
     // return `http://localhost:${port}/data/restaurants.json`;
 
-    return '/data/restaurants.json';
+    return `http://${window.location.hostname}:1337/restaurants`;
   }
 
   /**
@@ -22,8 +22,7 @@ class DBHelper {
     xhr.open('GET', DBHelper.DATABASE_URL);
     xhr.onload = () => {
       if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
+        const restaurants = JSON.parse(xhr.responseText);
         callback(null, restaurants);
       } else { // Oops!. Got an error from server.
         const error = (`Request failed. Returned status of ${xhr.status}`);
@@ -79,6 +78,7 @@ class DBHelper {
       } else {
         // Filter restaurants to have only given neighborhood
         const results = restaurants.filter(r => r.neighborhood == neighborhood);
+
         callback(null, results);
       }
     });
@@ -169,10 +169,8 @@ class DBHelper {
   /**
    * Generate responsive image name.
    */
-  static responsiveImageName(fileName, width) {
-    let imgExtension = fileName.substr(fileName.lastIndexOf('.'))
-    let imgName = fileName.substr(0, fileName.lastIndexOf('.')) || fileName;
-    return this.imageUrl(imgName + "_" + width + imgExtension);
+  static responsiveImageName(imgName, width) {
+    return this.imageUrl(imgName + "_" + width + ".jpg");
   }
 
   /**

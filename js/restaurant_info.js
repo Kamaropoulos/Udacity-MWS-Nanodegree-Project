@@ -62,10 +62,16 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   address.innerHTML = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img'
-  image.src = DBHelper.responsiveImageName(restaurant.photograph, "2x");
-  image.srcset = DBHelper.generateSrcSet(restaurant);
-  image.alt = "Image of " + restaurant.name;
+  image.className = 'restaurant-img';
+  if (!restaurant.photograph) {
+    image.src = "/img/no-photo.png";
+    image.alt = "Image of " + restaurant.name + " was not found.";
+    image.style = "background-color: transparent;";
+  } else {
+    image.src = DBHelper.responsiveImageName(restaurant.photograph, "1x");
+    image.alt = "Image of " + restaurant.name;
+    image.srcset = DBHelper.generateSrcSet(restaurant);
+  }
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
