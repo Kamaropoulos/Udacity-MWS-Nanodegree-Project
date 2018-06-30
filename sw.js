@@ -55,7 +55,6 @@ self.addEventListener('fetch', function(event){
             return;
         }
         if (requestUrl.pathname.startsWith('/img/')) {
-            console.log("Original IMG: " + requestUrl.pathname);
             event.respondWith(serverImg(event.request));
             return;
         }
@@ -70,8 +69,6 @@ self.addEventListener('fetch', function(event){
 
 function serverImg(request) {
     var storageUrl = request.url.replace(/_\d+(?:\.\d+)?x\.jpg$/, '');
-
-    console.log("New IMG: " + storageUrl);
 
     return caches.open(imgsCahce).then(function(cache) {
         return cache.match(storageUrl).then(function(response) {
