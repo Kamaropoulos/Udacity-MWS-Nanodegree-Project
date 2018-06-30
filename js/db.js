@@ -9,6 +9,12 @@ const restaurantsDB = {
           .objectStore('restaurants').get(key);
       });
     },
+    getAll() {
+      return dbPromise.then(db => {
+        return db.transaction('restaurants')
+          .objectStore('restaurants').getAll();
+      });
+    },
     set(key, val) {
       return dbPromise.then(db => {
         const tx = db.transaction('restaurants', 'readwrite');
