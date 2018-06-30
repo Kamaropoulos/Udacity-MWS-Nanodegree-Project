@@ -1,3 +1,11 @@
+var staticCache = "rr-static-v1";
+var imgsCahce = "rr-imgs";
+
+var allCaches = [
+    staticCache,
+    imgsCahce
+];
+
 self.addEventListener('install', function(event){
     var urlsToCache = [
         '/',
@@ -17,16 +25,62 @@ self.addEventListener('install', function(event){
         'https://fonts.gstatic.com/s/roboto/v18/KFOlCnqEu92Fr1MmEU9fBxc4EsA.woff2'
     ];
     event.waitUntil(
-        caches.open('restaurant-reviews-static-v1').then(function(cache){
+        caches.open(staticCache).then(function(cache){
             return cache.addAll(urlsToCache);
         })
     );
 });
 
+self.addEventListener('activate', function(event) {
+    event.waitUntil(
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(
+                cacheNames.filter(function(cacheName) {
+                    return cacheName.startsWith('rr-') &&
+                    !allCaches.includes(cacheName);
+                }).map(function(cacheName) {
+                    return caches.delete(cacheName);
+                })
+            );
+        })
+    );
+});
+
 self.addEventListener('fetch', function(event){
+    var requestUrl = new URL(event.request.url);
+
+    if (requestUrl.origin === location.origin) {
+        if (requestUrl.pathname === '/') {
+            event.respondWith(caches.match('/'));
+            return;
+        }
+        if (requestUrl.pathname.startsWith('/img/')) {
+            console.log("Original IMG: " + requestUrl.pathname);
+            event.respondWith(serverImg(event.request));
+            return;
+        }
+    }
+
     event.respondWith(
         caches.match(event.request).then(function(response){
             return response || fetch(event.request);
         })
     )
 });
+
+function serverImg(request) {
+    var storageUrl = request.url.replace(/_\d+(?:\.\d+)?x\.jpg$/, '');
+
+    console.log("New IMG: " + storageUrl);
+
+    return caches.open(imgsCahce).then(function(cache) {
+        return cache.match(storageUrl).then(function(response) {
+            if (response) return response;
+
+            return fetch(request).then(function(networkResponse) {
+                cache.put(storageUrl, networkResponse.clone());
+                return networkResponse;
+            })
+        })
+    })
+}
