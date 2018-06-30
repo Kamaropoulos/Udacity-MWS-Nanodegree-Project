@@ -49,25 +49,37 @@ self.addEventListener('activate', function(event) {
 self.addEventListener('fetch', function(event){
     var requestUrl = new URL(event.request.url);
 
-    if (requestUrl.origin === location.origin) {
-        if (requestUrl.pathname === '/') {
-            event.respondWith(caches.match('/'));
-            return;
+    if (event.request.method == "POST") {
+        if (!navigator.onLine) {
+            // Store in queue
+        } else {
+            fetch(event.request);
         }
-        if (requestUrl.pathname.startsWith('/img/')) {
-            event.respondWith(serverImg(event.request));
-            return;
+    } else {
+        if (requestUrl.origin === location.origin) {
+            if (requestUrl.pathname === '/') {
+                event.respondWith(caches.match('/'));
+                return;
+            }
+            if (requestUrl.pathname.startsWith('/img/')) {
+                event.respondWith(serveImg(event.request));
+                return;
+            }
         }
+    
+        event.respondWith(
+            caches.match(event.request).then(function(response){
+                return response || fetch(event.request);
+            })
+        )
     }
 
-    event.respondWith(
-        caches.match(event.request).then(function(response){
-            return response || fetch(event.request);
-        })
-    )
+    if (navigator.onLine) {
+        // Replay stored POST requests (if any)
+    }
 });
 
-function serverImg(request) {
+function serveImg(request) {
     var storageUrl = request.url.replace(/_\d+(?:\.\d+)?x\.jpg$/, '');
 
     return caches.open(imgsCahce).then(function(cache) {
