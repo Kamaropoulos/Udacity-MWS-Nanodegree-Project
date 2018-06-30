@@ -18,35 +18,45 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    if (DBHelper.restaurantsJSON) {
-      console.log(1);
-      callback(null, this.restaurantsJSON);
-    } else {
-      console.log(2);
-      fetch(DBHelper.DATABASE_URL).then(function(response) {
-        return response.json();
-      }).then(function(response){
-        DBHelper.restaurantsJSON = response;
-        callback(null, response);
-      })
-      .catch(e => {
-        callback(e, null);
-      });
-    }
+    restaurantsDB.get("*")
+    .then(val =>{
+      if (val){
+        callback(null, val);
+      } else {
+        fetch(DBHelper.DATABASE_URL).then(function(response) {
+          return response.json();
+        }).then(function(response){
+          DBHelper.restaurantsJSON = response;
+          restaurantsDB.set("*", response);
+          callback(null, response);
+        })
+        .catch(e => {
+          callback(e, null);
+        });
+      }
+    });
   }
 
   /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
-    fetch(DBHelper.DATABASE_URL + '/' + id).then(function(response) {
-      return response.json();
-    }).then(function(response){
-      DBHelper.restaurantsJSON = response;
-      callback(null, response);
-    })
-    .catch(e => {
-      callback(e, null);
+    restaurantsDB.get(id)
+    .then(val =>{
+      if (val){
+        callback(null, val);
+      } else {
+        fetch(DBHelper.DATABASE_URL + '/' + id).then(function(response) {
+          return response.json();
+        }).then(function(response){
+          DBHelper.restaurantsJSON = response;
+          restaurantsDB.set(id, response);
+          callback(null, response);
+        })
+        .catch(e => {
+          callback(e, null);
+        });
+      }
     });
   }
 
