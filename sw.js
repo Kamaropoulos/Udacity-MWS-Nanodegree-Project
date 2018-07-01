@@ -1,3 +1,6 @@
+importScripts("/js/idb.js");
+importScripts("/js/db.js");
+
 var staticCache = "rr-static-v1";
 var imgsCahce = "rr-imgs";
 
@@ -6,7 +9,7 @@ var allCaches = [
     imgsCahce
 ];
 
-self.addEventListener('install', function(event){
+self.addEventListener('install', function (event) {
     var urlsToCache = [
         '/',
         'index.html',
@@ -25,20 +28,20 @@ self.addEventListener('install', function(event){
         'https://fonts.gstatic.com/s/roboto/v18/KFOlCnqEu92Fr1MmEU9fBxc4EsA.woff2'
     ];
     event.waitUntil(
-        caches.open(staticCache).then(function(cache){
+        caches.open(staticCache).then(function (cache) {
             return cache.addAll(urlsToCache);
         })
     );
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', function (event) {
     event.waitUntil(
-        caches.keys().then(function(cacheNames) {
+        caches.keys().then(function (cacheNames) {
             return Promise.all(
-                cacheNames.filter(function(cacheName) {
+                cacheNames.filter(function (cacheName) {
                     return cacheName.startsWith('rr-') &&
-                    !allCaches.includes(cacheName);
-                }).map(function(cacheName) {
+                        !allCaches.includes(cacheName);
+                }).map(function (cacheName) {
                     return caches.delete(cacheName);
                 })
             );
@@ -46,12 +49,12 @@ self.addEventListener('activate', function(event) {
     );
 });
 
-self.addEventListener('fetch', function(event){
+self.addEventListener('fetch', function (event) {
     var requestUrl = new URL(event.request.url);
 
     if (event.request.method == "POST") {
         if (!navigator.onLine) {
-            // Store in queue
+            storeReviewInQueue(event.request);
         } else {
             fetch(event.request);
         }
@@ -65,28 +68,83 @@ self.addEventListener('fetch', function(event){
                 event.respondWith(serveImg(event.request));
                 return;
             }
+        } else if (requestUrl.href.endsWith(':1337/restaurants')) {
+            event.respondWith(getRestaurantsFromIDB(event.request));
+            event.waitUntil(fetchNewRestaurants(event.request));
+        } else if (requestUrl.href.indexOf(':1337/restaurants/') !== -1) {
+            event.respondWith(getRestaurantFromIDB(event.request));
+            event.waitUntil(fetchNewRestaurants(event.request));
+        } else if (requestUrl.href.indexOf(':1337/reviews/?restaurant_id=') !== -1) {
+            event.respondWith(getReviewsFromIDB(event.request));
+            event.waitUntil(fetchNewReviews(event.request));
+        } else {
+            event.respondWith(
+                caches.match(event.request).then(function (response) {
+                    return response || fetch(event.request);
+                })
+            );
         }
-    
-        event.respondWith(
-            caches.match(event.request).then(function(response){
-                return response || fetch(event.request);
-            })
-        )
     }
 
     if (navigator.onLine) {
-        // Replay stored POST requests (if any)
+        replayStoredReviews();
     }
 });
+
+function getRestaurantsFromIDB(request) {
+    return restaurantsDB.getAll().then((val) => {
+        return new Response(JSON.stringify(val), {
+            headers: {'Content-Type': 'application/json'}
+        });
+    });
+}
+
+function getRestaurantFromIDB(request) {
+    console.log("getRestaurantFromIDB");
+    console.log(request);
+}
+
+function getReviewsFromIDB(request) {
+    console.log("getReviewsFromIDB");
+    console.log(request);
+}
+
+function fetchNewRestaurants(request) {
+    return fetch(request).then(function (networkResponse) {
+        networkResponse.clone().json().then(data => {
+          for (const key in data) {
+              if (data.hasOwnProperty(key)) {
+                  const restaurant = data[key];
+                  restaurantsDB.set(restaurant.id, restaurant);
+              }
+          }
+        });
+        return networkResponse;
+    });
+}
+
+function fetchNewReviews(request) {
+    console.log("fetchNewReviews");
+    console.log(request);
+}
+
+function storeReviewInQueue(request) {
+    console.log("storeReviewInQueue");
+    console.log(request);
+}
+
+function replayStoredReviews() {
+    console.log("replayStoredReviews");
+}
 
 function serveImg(request) {
     var storageUrl = request.url.replace(/_\d+(?:\.\d+)?x\.jpg$/, '');
 
-    return caches.open(imgsCahce).then(function(cache) {
-        return cache.match(storageUrl).then(function(response) {
+    return caches.open(imgsCahce).then(function (cache) {
+        return cache.match(storageUrl).then(function (response) {
             if (response) return response;
 
-            return fetch(request).then(function(networkResponse) {
+            return fetch(request).then(function (networkResponse) {
                 cache.put(storageUrl, networkResponse.clone());
                 return networkResponse;
             })
