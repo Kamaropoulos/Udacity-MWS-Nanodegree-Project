@@ -11,14 +11,14 @@ class DBHelper {
     // const port = 8000 // Change this to your server port
     // return `http://localhost:${port}/data/restaurants.json`;
 
-    return `http://${window.location.hostname}:1337/restaurants`;
+    return `http://${window.location.hostname}:1337/`;
   }
 
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    fetch(DBHelper.DATABASE_URL).then(function (response) {
+    fetch(DBHelper.DATABASE_URL + "restaurants").then(function (response) {
       return response.json();
     }).then(function (response) {
       callback(null, response);
@@ -32,10 +32,18 @@ class DBHelper {
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
-    fetch(DBHelper.DATABASE_URL + '/' + id).then(function (response) {
+    fetch(DBHelper.DATABASE_URL + 'restaurants/' + id).then(function (response) {
       return response.json();
-    }).then(function (response) {
-      callback(null, response);
+    }).then(function (responseRestaurants) {
+        fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id).then(function (response) {
+          return response.json();
+        }).then(function (responseReviews) {
+          responseRestaurants.reviews = responseReviews;
+          callback(null, responseRestaurants);
+        })
+          .catch(e => {
+            callback(e, null);
+          });
     })
       .catch(e => {
         callback(e, null);

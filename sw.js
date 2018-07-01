@@ -104,16 +104,6 @@ function getRestaurantsFromIDB(request) {
 }
 
 function getRestaurantFromIDB(request) {
-    // let id = request.url.substr(request.url.lastIndexOf('/') + 1);
-    // console.log("id: " + id);
-    // let data = restaurantsDB.get(id).then(val => console.log(val));
-    // return restaurantsDB.get(id).then((val) => {
-    //     console.log(JSON.stringify(val));
-    //     return new Response(JSON.stringify(val), {
-    //         headers: {'Content-Type': 'application/json'}
-    //     });
-    // });
-
     let id = request.url.substr(request.url.lastIndexOf('/') + 1);
     return restaurantsDB.getAll().then((val) => {
         if (val) {
@@ -135,15 +125,14 @@ function getRestaurantFromIDB(request) {
 }
 
 function getReviewsFromIDB(request) {
-    let id = request.url.substr(request.url.lastIndexOf('/') + 1);
+    let id = request.url.substr(request.url.lastIndexOf('=') + 1);
     return reviewsDB.getAll().then((val) => {
-        if (val) {
+        if (val.length > 0) {
             let result = val.filter(function (obj) {
                 return obj.restaurant_id == id;
             });
-            let requestedRestaurant = result[0]
-            if (requestedRestaurant) {
-                return new Response(JSON.stringify(result[0]), {
+            if (result.length > 0) {
+                return new Response(JSON.stringify(result), {
                     headers: { 'Content-Type': 'application/json' }
                 });
             } else {
@@ -170,11 +159,20 @@ function calculateUpdates(oldData, newData) {
     let idsToBeDeleted = [];
     let itemsToBeAdded = [];
 
-    // This is the first time we cache, store everything
-    if (oldData.length == 0) {
-        itemsToBeAdded = newData;
-        return [idsToBeDeleted, itemsToBeAdded];
-    }
+    // // This is the first time we cache, store everything
+    // if (oldData.length == 0) {
+    //     itemsToBeAdded = newData;
+    //     return [idsToBeDeleted, itemsToBeAdded];
+    // }
+
+    // if (oldData.length < newData.length){
+    //     // Return everything for now
+    //     // TODO: Get only the needed items to be added
+    //     itemsToBeAdded = newData;
+    //     return [idsToBeDeleted, itemsToBeAdded];
+    // }
+
+    itemsToBeAdded = newData;
 
     // If not
     return [idsToBeDeleted, itemsToBeAdded];
@@ -213,8 +211,35 @@ function fetchNewRestaurants(request) {
 }
 
 function fetchNewReviews(request) {
-    console.log("fetchNewReviews");
-    console.log(request);
+    return fetch(request).then(function (networkResponse) {
+        networkResponse.clone().json().then(data => {
+            reviewsDB.getAll().then((oldReviews) => {
+                if (oldReviews !== data) {
+                    let idsToBeDeleted, reviewsToBeAdded;
+                    [idsToBeDeleted, reviewsToBeAdded] = calculateUpdates(oldReviews, data);
+
+                    if (idsToBeDeleted) {
+                        for (const key in idsToBeDeleted) {
+                            if (idsToBeDeleted.hasOwnProperty(key)) {
+                                const idToDelete = idsToBeDeleted[key];
+                                reviewsDB.delete(idToDelete);
+                            }
+                        }
+                    }
+
+                    if (reviewsToBeAdded) {
+                        for (const key in reviewsToBeAdded) {
+                            if (reviewsToBeAdded.hasOwnProperty(key)) {
+                                const reviewToBeAdded = reviewsToBeAdded[key];
+                                reviewsDB.set(reviewToBeAdded.id, reviewToBeAdded);
+                            }
+                        }
+                    }
+                }
+            })
+        });
+        return networkResponse;
+    });
 }
 
 function storeReviewInQueue(request) {
