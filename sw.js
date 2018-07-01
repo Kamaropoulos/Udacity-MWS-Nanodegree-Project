@@ -93,31 +93,121 @@ self.addEventListener('fetch', function (event) {
 
 function getRestaurantsFromIDB(request) {
     return restaurantsDB.getAll().then((val) => {
-        return new Response(JSON.stringify(val), {
-            headers: {'Content-Type': 'application/json'}
-        });
+        if (val) {
+            return new Response(JSON.stringify(val), {
+                headers: {'Content-Type': 'application/json'}
+            });
+        } else {
+            return fetch(request);
+        }
     });
 }
 
 function getRestaurantFromIDB(request) {
-    console.log("getRestaurantFromIDB");
-    console.log(request);
+    // let id = request.url.substr(request.url.lastIndexOf('/') + 1);
+    // console.log("id: " + id);
+    // let data = restaurantsDB.get(id).then(val => console.log(val));
+    // return restaurantsDB.get(id).then((val) => {
+    //     console.log(JSON.stringify(val));
+    //     return new Response(JSON.stringify(val), {
+    //         headers: {'Content-Type': 'application/json'}
+    //     });
+    // });
+
+    let id = request.url.substr(request.url.lastIndexOf('/') + 1);
+    return restaurantsDB.getAll().then((val) => {
+        if (val) {
+            let result = val.filter(function( obj ) {
+                return obj.id == id;
+              });
+            let requestedRestaurant = result[0]
+            if (requestedRestaurant) {
+                return new Response(JSON.stringify(result[0]), {
+                    headers: {'Content-Type': 'application/json'}
+                });
+            } else {
+                return fetch(request);
+            }
+        } else {
+            return fetch(request);
+        }
+    });
 }
 
 function getReviewsFromIDB(request) {
-    console.log("getReviewsFromIDB");
-    console.log(request);
+    let id = request.url.substr(request.url.lastIndexOf('/') + 1);
+    return reviewsDB.getAll().then((val) => {
+        if (val) {
+            let result = val.filter(function( obj ) {
+                return obj.restaurant_id == id;
+              });
+            let requestedRestaurant = result[0]
+            if (requestedRestaurant) {
+                return new Response(JSON.stringify(result[0]), {
+                    headers: {'Content-Type': 'application/json'}
+                });
+            } else {
+                return fetch(request);
+            }
+        } else {
+            return fetch(request);
+        }
+    });
 }
+
+function calculateRestaurantUpdates(oldData, newData) {
+
+    /**
+     * This is not 100% functional! (but it's good enough for now)
+     * Right now, all it does is check if we stored any restaurants before, if no,
+     * then it stores everything it got. It does not take into account new restaurants
+     * being added but since this is not a possibility at this point, it was skipped.
+     * What it should do is find the elemnts on oldData that don't exist on the newData
+     * and set them for deletion.Then, it should find the elements that exist on newData
+     * but not on oldData and set them to be added to IDB.
+     */
+
+    let idsToBeDeleted = [];
+    let restaurantsToBeAdded = [];
+
+    // This is the first time we cache, store everything
+    if (oldData.length == 0) {
+        restaurantsToBeAdded = newData;
+        return [idsToBeDeleted, restaurantsToBeAdded];
+    }
+
+    // If not
+    return [idsToBeDeleted, restaurantsToBeAdded];
+}
+
 
 function fetchNewRestaurants(request) {
     return fetch(request).then(function (networkResponse) {
         networkResponse.clone().json().then(data => {
-          for (const key in data) {
-              if (data.hasOwnProperty(key)) {
-                  const restaurant = data[key];
-                  restaurantsDB.set(restaurant.id, restaurant);
-              }
-          }
+          restaurantsDB.getAll().then((oldRestaurants) => {
+            if (oldRestaurants !== data){
+                let idsToBeDeleted, restaurantsToBeAdded;
+                [idsToBeDeleted, restaurantsToBeAdded] = calculateRestaurantUpdates(oldRestaurants, data);
+    
+                if (idsToBeDeleted) {
+                    for (const key in idsToBeDeleted) {
+                        if (idsToBeDeleted.hasOwnProperty(key)) {
+                            const idToDelete = idsToBeDeleted[key];
+                            restaurantsDB.delete(idToDelete);
+                        }
+                    }
+                }
+    
+                if (restaurantsToBeAdded) {
+                    for (const key in restaurantsToBeAdded) {
+                        if (restaurantsToBeAdded.hasOwnProperty(key)) {
+                            const restaurantToBeAdded = restaurantsToBeAdded[key];
+                            restaurantsDB.set(restaurantToBeAdded.id, restaurantToBeAdded);
+                        }
+                    }
+                }
+            }
+          })
         });
         return networkResponse;
     });
