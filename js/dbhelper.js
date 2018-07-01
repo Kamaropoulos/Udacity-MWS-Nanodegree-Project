@@ -18,14 +18,14 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    fetch(DBHelper.DATABASE_URL).then(function(response) {
+    fetch(DBHelper.DATABASE_URL).then(function (response) {
       return response.json();
-    }).then(function(response){
+    }).then(function (response) {
       callback(null, response);
     })
-    .catch(e => {
-      callback(e, null);
-    });
+      .catch(e => {
+        callback(e, null);
+      });
   }
 
   /**

@@ -95,7 +95,7 @@ function getRestaurantsFromIDB(request) {
     return restaurantsDB.getAll().then((val) => {
         if (val) {
             return new Response(JSON.stringify(val), {
-                headers: {'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
         } else {
             return fetch(request);
@@ -117,13 +117,13 @@ function getRestaurantFromIDB(request) {
     let id = request.url.substr(request.url.lastIndexOf('/') + 1);
     return restaurantsDB.getAll().then((val) => {
         if (val) {
-            let result = val.filter(function( obj ) {
+            let result = val.filter(function (obj) {
                 return obj.id == id;
-              });
+            });
             let requestedRestaurant = result[0]
             if (requestedRestaurant) {
                 return new Response(JSON.stringify(result[0]), {
-                    headers: {'Content-Type': 'application/json'}
+                    headers: { 'Content-Type': 'application/json' }
                 });
             } else {
                 return fetch(request);
@@ -138,13 +138,13 @@ function getReviewsFromIDB(request) {
     let id = request.url.substr(request.url.lastIndexOf('/') + 1);
     return reviewsDB.getAll().then((val) => {
         if (val) {
-            let result = val.filter(function( obj ) {
+            let result = val.filter(function (obj) {
                 return obj.restaurant_id == id;
-              });
+            });
             let requestedRestaurant = result[0]
             if (requestedRestaurant) {
                 return new Response(JSON.stringify(result[0]), {
-                    headers: {'Content-Type': 'application/json'}
+                    headers: { 'Content-Type': 'application/json' }
                 });
             } else {
                 return fetch(request);
@@ -184,30 +184,30 @@ function calculateRestaurantUpdates(oldData, newData) {
 function fetchNewRestaurants(request) {
     return fetch(request).then(function (networkResponse) {
         networkResponse.clone().json().then(data => {
-          restaurantsDB.getAll().then((oldRestaurants) => {
-            if (oldRestaurants !== data){
-                let idsToBeDeleted, restaurantsToBeAdded;
-                [idsToBeDeleted, restaurantsToBeAdded] = calculateRestaurantUpdates(oldRestaurants, data);
-    
-                if (idsToBeDeleted) {
-                    for (const key in idsToBeDeleted) {
-                        if (idsToBeDeleted.hasOwnProperty(key)) {
-                            const idToDelete = idsToBeDeleted[key];
-                            restaurantsDB.delete(idToDelete);
+            restaurantsDB.getAll().then((oldRestaurants) => {
+                if (oldRestaurants !== data) {
+                    let idsToBeDeleted, restaurantsToBeAdded;
+                    [idsToBeDeleted, restaurantsToBeAdded] = calculateRestaurantUpdates(oldRestaurants, data);
+
+                    if (idsToBeDeleted) {
+                        for (const key in idsToBeDeleted) {
+                            if (idsToBeDeleted.hasOwnProperty(key)) {
+                                const idToDelete = idsToBeDeleted[key];
+                                restaurantsDB.delete(idToDelete);
+                            }
+                        }
+                    }
+
+                    if (restaurantsToBeAdded) {
+                        for (const key in restaurantsToBeAdded) {
+                            if (restaurantsToBeAdded.hasOwnProperty(key)) {
+                                const restaurantToBeAdded = restaurantsToBeAdded[key];
+                                restaurantsDB.set(restaurantToBeAdded.id, restaurantToBeAdded);
+                            }
                         }
                     }
                 }
-    
-                if (restaurantsToBeAdded) {
-                    for (const key in restaurantsToBeAdded) {
-                        if (restaurantsToBeAdded.hasOwnProperty(key)) {
-                            const restaurantToBeAdded = restaurantsToBeAdded[key];
-                            restaurantsDB.set(restaurantToBeAdded.id, restaurantToBeAdded);
-                        }
-                    }
-                }
-            }
-          })
+            })
         });
         return networkResponse;
     });
