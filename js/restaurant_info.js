@@ -1,4 +1,5 @@
 let restaurant;
+let reviews;
 var map;
 
 /**
