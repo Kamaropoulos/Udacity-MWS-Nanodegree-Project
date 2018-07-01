@@ -1,5 +1,7 @@
 let restaurant;
 var map;
+var restaurantID;
+let ratingValue = "0";
 
 /**
  * Initialize Google map, called from HTML.
@@ -35,6 +37,7 @@ fetchRestaurantFromURL = (callback) => {
     return;
   }
   const id = getParameterByName('id');
+  restaurantID = id;
   if (!id) { // no id found in URL
     error = 'No restaurant id in URL'
     callback(error, null);
@@ -123,7 +126,80 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
+  ul.appendChild(createReviewForm());
+
+  var rad = document.querySelectorAll(".starR");
+  var prev = null;
+  for (var i = 0; i < rad.length; i++) {
+    rad[i].onclick = function () {
+      if (this !== prev) {
+        prev = this;
+      }
+      ratingValue = this.value;
+    };
+  }
+
+  document.querySelector("#reviewForm").addEventListener("submit", function (e) {
+    e.preventDefault();    //stop form from submitting
+
+    // Get form data
+    let data = document.querySelector("#reviewForm").serialize();
+    data.stars = ratingValue;
+
+    // Validate data
+    if (!data.reviewText || !data.reviewName || !data.stars) {
+      // Something went wrong
+    }
+
+    fetch(`http://${window.location.hostname}:1337/reviews/`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "restaurant_id": restaurantID,
+        "name": data.reviewName,
+        "rating": data.stars,
+        "comments": data.reviewText
+      })
+    }).then(res => res.json())
+      .then(res => {
+        // Check result
+        // If success, set to done
+        // Else output msg
+        console.log(res)
+      });
+
+      // Create new element
+      let newReview = {};
+      newReview.comments = data.reviewText;
+      newReview.createAt = new Date().getTime();
+      newReview.restaurant_id = restaurantID;
+      newReview.name = data.reviewName;
+      newReview.rating = data.stars;
+      newReview.updatedAt = newReview.createAt;
+      const ul = document.getElementById('reviews-list');
+      ul.insertBefore(createReviewHTML(newReview), ul.childNodes[ul.childNodes.length-1]);
+
+  });
+
   container.appendChild(ul);
+}
+
+HTMLElement.prototype.serialize = function () {
+  var obj = {};
+  var elements = this.querySelectorAll("input, select, textarea");
+  for (var i = 0; i < elements.length; ++i) {
+    var element = elements[i];
+    var name = element.name;
+    var value = element.value;
+
+    if (name) {
+      obj[name] = value;
+    }
+  }
+  return obj;
 }
 
 /**
@@ -146,6 +222,50 @@ createReviewHTML = (review) => {
   const comments = document.createElement('p');
   comments.innerHTML = review.comments;
   li.appendChild(comments);
+
+  return li;
+}
+
+createReviewForm = () => {
+  const li = document.createElement('li');
+
+  li.innerHTML =
+    `<h3>Add Your Review</h3>
+    <form id="reviewForm">
+      <textarea name="reviewText" id="reviewText" cols="5" rows="5" required></textarea>
+      <div>Your Name:<input type="text" name="reviewName" id="reviewName" required></div>
+      <div>Your rating: <div class="rating"><label>
+      <input class="starR" type="radio" name="stars" value="1"  required/>
+      <span class="icon">★</span>
+    </label>
+    <label>
+      <input class="starR" type="radio" name="stars" value="2"  required/>
+      <span class="icon">★</span>
+      <span class="icon">★</span>
+    </label>
+    <label>
+      <input class="starR" type="radio" name="stars" value="3"  required/>
+      <span class="icon">★</span>
+      <span class="icon">★</span>
+      <span class="icon">★</span>   
+    </label>
+    <label>
+      <input class="starR" type="radio" name="stars" value="4"  required/>
+      <span class="icon">★</span>
+      <span class="icon">★</span>
+      <span class="icon">★</span>
+      <span class="icon">★</span>
+    </label>
+    <label>
+      <input class="starR" type="radio" name="stars" value="5"  required/>
+      <span class="icon">★</span>
+      <span class="icon">★</span>
+      <span class="icon">★</span>
+      <span class="icon">★</span>
+      <span class="icon">★</span>
+    </label></div></div> 
+      <button href="#" id="reviewSubmit">Submit</button>
+    </form>`;
 
   return li;
 }

@@ -411,7 +411,7 @@ nav h1 a {
 }
 
 #reviews-list li:focus, #reviews-list li:hover  {
-  background-color: #f5cc9b;
+  background-color: rgba(23, 90, 135, 0.219);
 }
 
 #reviews-list li p {
@@ -420,4 +420,113 @@ nav h1 a {
 
 #restaurant-hours td {
   color: #666;
+}
+
+
+
+#reviewText {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+#reviewName {
+  margin: 10px;
+}
+
+#reviewSubmit {
+  background-color: #3E600B;
+  border-bottom: 3px solid #eee;
+  color: #fff;
+  display: inline-block;
+  font-size: 10pt;
+  margin: 15px 15px 0;
+  padding: 8px 30px 10px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all 0.3s ease-in;
+}
+
+#reviewSubmit:focus, #reviewSubmit:hover {
+  background-color: #fff;
+  color: #3E600B;
+  outline: 4px solid #3E600B;
+}
+
+
+
+
+
+
+
+
+.rating {
+  display: inline-block;
+  position: relative;
+  height: 32px;
+  /* line-height: 1em; */
+  font-size: 32px;
+}
+
+.rating label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  cursor: pointer;
+}
+
+.rating label:last-child {
+  position: static;
+}
+
+.rating label:nth-child(1) {
+  z-index: 5;
+}
+
+.rating label:nth-child(2) {
+  z-index: 4;
+}
+
+.rating label:nth-child(3) {
+  z-index: 3;
+}
+
+.rating label:nth-child(4) {
+  z-index: 2;
+}
+
+.rating label:nth-child(5) {
+  z-index: 1;
+}
+
+.rating label input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+.rating label .icon {
+  float: left;
+  color: transparent;
+}
+
+.rating label:last-child .icon {
+  color: #000;
+}
+
+.rating:not(:hover) label input:checked ~ .icon {
+  color: rgb(90, 139, 15);
+  text-shadow: 0 0 32px rgba(135, 221, 6, 0.938);
+}
+
+
+.rating:hover label:hover input ~ .icon {
+  color: rgb(90, 139, 15);
+  text-shadow: 0 0 32px rgba(135, 221, 6, 0.938);
+}
+
+.rating label input:focus:not(:checked) ~ .icon:last-child {
+  color: #000;
 }
