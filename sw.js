@@ -155,7 +155,7 @@ function getReviewsFromIDB(request) {
     });
 }
 
-function calculateRestaurantUpdates(oldData, newData) {
+function calculateUpdates(oldData, newData) {
 
     /**
      * This is not 100% functional! (but it's good enough for now)
@@ -168,18 +168,17 @@ function calculateRestaurantUpdates(oldData, newData) {
      */
 
     let idsToBeDeleted = [];
-    let restaurantsToBeAdded = [];
+    let itemsToBeAdded = [];
 
     // This is the first time we cache, store everything
     if (oldData.length == 0) {
-        restaurantsToBeAdded = newData;
-        return [idsToBeDeleted, restaurantsToBeAdded];
+        itemsToBeAdded = newData;
+        return [idsToBeDeleted, itemsToBeAdded];
     }
 
     // If not
-    return [idsToBeDeleted, restaurantsToBeAdded];
+    return [idsToBeDeleted, itemsToBeAdded];
 }
-
 
 function fetchNewRestaurants(request) {
     return fetch(request).then(function (networkResponse) {
@@ -187,7 +186,7 @@ function fetchNewRestaurants(request) {
             restaurantsDB.getAll().then((oldRestaurants) => {
                 if (oldRestaurants !== data) {
                     let idsToBeDeleted, restaurantsToBeAdded;
-                    [idsToBeDeleted, restaurantsToBeAdded] = calculateRestaurantUpdates(oldRestaurants, data);
+                    [idsToBeDeleted, restaurantsToBeAdded] = calculateUpdates(oldRestaurants, data);
 
                     if (idsToBeDeleted) {
                         for (const key in idsToBeDeleted) {
