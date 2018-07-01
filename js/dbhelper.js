@@ -33,9 +33,8 @@ class DBHelper {
    */
   static fetchRestaurantById(id, callback) {
     fetch(DBHelper.DATABASE_URL + '/' + id).then(function (response) {
-      return response;
+      return response.json();
     }).then(function (response) {
-      DBHelper.restaurantsJSON = response;
       callback(null, response);
     })
       .catch(e => {
