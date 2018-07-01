@@ -1,6 +1,6 @@
 const dbPromise = idb.open('restaurants-store', 1, upgradeDB => {
   upgradeDB.createObjectStore('restaurants');
-  upgradeDB.createObjectStore('restaurants');
+  upgradeDB.createObjectStore('reviews');
 });
 
 const restaurantsDB = {
