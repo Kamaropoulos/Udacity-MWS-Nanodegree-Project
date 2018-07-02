@@ -56,7 +56,7 @@ self.addEventListener('fetch', function (event) {
         if (!navigator.onLine) {
             storeReviewInQueue(event.request);
         } else {
-            fetch(event.request);
+            event.respondWith(fetch(event.request));
         }
     } else {
         if (requestUrl.origin === location.origin) {
