@@ -243,12 +243,45 @@ function fetchNewReviews(request) {
 }
 
 function storeReviewInQueue(request) {
-    console.log("storeReviewInQueue");
-    console.log(request);
+    request.text().then(review => {
+        offlineRequestStoreDB.get('itemsCount').then(count => {
+            let id = 0;
+            if (count) id = count;
+
+            offlineRequestStoreDB.set('itemsCount', id + 1);
+            offlineRequestStoreDB.set(id, JSON.parse(review));
+        });
+    });
 }
 
 function replayStoredReviews() {
-    console.log("replayStoredReviews");
+    offlineRequestStoreDB.getAll().then(data => {
+        if (data.length > 1) {
+            let count = data.pop();
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    const review = data[key];
+                    fetch(`http://${location.hostname}:1337/reviews/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: JSON.stringify({
+                            "restaurant_id": review.restaurant_id,
+                            "name": review.name,
+                            "rating": review.rating,
+                            "comments": review.comments
+                        })
+                    }).then(res => res.json())
+                        .then(res => {
+                            // 
+                        });
+                }
+            }
+
+            offlineRequestStoreDB.clear();
+        }
+    });
 }
 
 function serveImg(request) {
