@@ -154,8 +154,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     fetch(`http://${window.location.hostname}:1337/reviews/`, {
       method: 'POST',
       headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'text/plain'
       },
       body: JSON.stringify({
         "restaurant_id": restaurantID,
