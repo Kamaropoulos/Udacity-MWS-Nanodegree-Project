@@ -181,6 +181,8 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
       const ul = document.getElementById('reviews-list');
       ul.insertBefore(createReviewHTML(newReview), ul.childNodes[ul.childNodes.length-1]);
 
+      reviewForm.resetInput();
+
   });
 
   container.appendChild(ul);
@@ -199,6 +201,16 @@ HTMLElement.prototype.serialize = function () {
     }
   }
   return obj;
+}
+
+HTMLElement.prototype.resetInput = function () {
+  var obj = {};
+  var elements = this.querySelectorAll("input, select, textarea");
+  for (var i = 0; i < elements.length; ++i) {
+    var element = elements[i];
+    element.value = "";
+    element.checked = false;
+  }
 }
 
 /**
@@ -240,29 +252,29 @@ createReviewForm = () => {
       <textarea name="reviewText" id="reviewText" cols="5" rows="5" required></textarea>
       <div>Your Name:<input type="text" name="reviewName" id="reviewName" required></div>
       <div>Your rating: <div class="rating"><label>
-      <input class="starR" type="radio" name="stars" value="1"  required/>
+      <input class="starR" type="radio" name="stars" value="1" required/>
       <span class="icon">★</span>
     </label>
     <label>
-      <input class="starR" type="radio" name="stars" value="2"  required/>
+      <input class="starR" type="radio" name="stars" value="2" required/>
       <span class="icon">★</span>
       <span class="icon">★</span>
     </label>
     <label>
-      <input class="starR" type="radio" name="stars" value="3"  required/>
+      <input class="starR" type="radio" name="stars" value="3" required/>
       <span class="icon">★</span>
       <span class="icon">★</span>
       <span class="icon">★</span>   
     </label>
     <label>
-      <input class="starR" type="radio" name="stars" value="4"  required/>
+      <input class="starR" type="radio" name="stars" value="4" required/>
       <span class="icon">★</span>
       <span class="icon">★</span>
       <span class="icon">★</span>
       <span class="icon">★</span>
     </label>
     <label>
-      <input class="starR" type="radio" name="stars" value="5"  required/>
+      <input class="starR" type="radio" name="stars" value="5" required/>
       <span class="icon">★</span>
       <span class="icon">★</span>
       <span class="icon">★</span>
