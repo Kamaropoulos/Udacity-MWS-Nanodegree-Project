@@ -210,6 +210,12 @@ createReviewHTML = (review) => {
   name.innerHTML = review.name;
   li.appendChild(name);
 
+  review.date = new Date(review.updatedAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   const date = document.createElement('p');
   date.innerHTML = review.date;
   li.appendChild(date);
