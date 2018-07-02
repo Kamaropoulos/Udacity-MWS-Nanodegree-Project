@@ -1,6 +1,7 @@
 const dbPromise = idb.open('restaurants-store', 1, upgradeDB => {
   upgradeDB.createObjectStore('restaurants');
   upgradeDB.createObjectStore('reviews');
+  upgradeDB.createObjectStore('offlineRequestStore');
 });
 
 const restaurantsDB = {
@@ -95,6 +96,60 @@ const reviewsDB = {
       const tx = db.transaction('reviews');
       const keys = [];
       const store = tx.objectStore('reviews');
+
+      // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
+      // openKeyCursor isn't supported by Safari, so we fall back
+      (store.iterateKeyCursor || store.iterateCursor).call(store, cursor => {
+        if (!cursor) return;
+        keys.push(cursor.key);
+        cursor.continue();
+      });
+
+      return tx.complete.then(() => keys);
+    });
+  }
+};
+
+
+const offlineRequestStoreDB = {
+  get(key) {
+    return dbPromise.then(db => {
+      return db.transaction('offlineRequestStore')
+        .objectStore('offlineRequestStore').get(key);
+    });
+  },
+  getAll() {
+    return dbPromise.then(db => {
+      return db.transaction('offlineRequestStore')
+        .objectStore('offlineRequestStore').getAll();
+    });
+  },
+  set(key, val) {
+    return dbPromise.then(db => {
+      const tx = db.transaction('offlineRequestStore', 'readwrite');
+      tx.objectStore('offlineRequestStore').put(val, key);
+      return tx.complete;
+    });
+  },
+  delete(key) {
+    return dbPromise.then(db => {
+      const tx = db.transaction('offlineRequestStore', 'readwrite');
+      tx.objectStore('offlineRequestStore').delete(key);
+      return tx.complete;
+    });
+  },
+  clear() {
+    return dbPromise.then(db => {
+      const tx = db.transaction('offlineRequestStore', 'readwrite');
+      tx.objectStore('offlineRequestStore').clear();
+      return tx.complete;
+    });
+  },
+  keys() {
+    return dbPromise.then(db => {
+      const tx = db.transaction('offlineRequestStore');
+      const keys = [];
+      const store = tx.objectStore('offlineRequestStore');
 
       // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
       // openKeyCursor isn't supported by Safari, so we fall back
