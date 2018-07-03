@@ -3,9 +3,17 @@
   "version": "1.0.0",
   "description": "---\r #### _Three Stage Course Material Project - Restaurant Reviews_",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "gulp-htmlmin": "^4.0.0",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-uglify": "^3.0.0",
+    "pump": "^3.0.0",
+    "uglify-es": "^3.3.9"
+  },
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.9.4",
+    "gulp-js-minify": "0.0.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
