@@ -35,15 +35,15 @@ class DBHelper {
     fetch(DBHelper.DATABASE_URL + 'restaurants/' + id).then(function (response) {
       return response.json();
     }).then(function (responseRestaurants) {
-        fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id).then(function (response) {
-          return response.json();
-        }).then(function (responseReviews) {
-          responseRestaurants.reviews = responseReviews;
-          callback(null, responseRestaurants);
-        })
-          .catch(e => {
-            callback(e, null);
-          });
+      fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id).then(function (response) {
+        return response.json();
+      }).then(function (responseReviews) {
+        responseRestaurants.reviews = responseReviews;
+        callback(null, responseRestaurants);
+      })
+        .catch(e => {
+          callback(e, null);
+        });
     })
       .catch(e => {
         callback(e, null);
@@ -190,15 +190,26 @@ class DBHelper {
    * Map marker for a restaurant.
    */
   static mapMarkerForRestaurant(restaurant, map) {
-    const marker = new google.maps.Marker({
-      position: restaurant.latlng,
-      title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
-      map: map,
-      animation: google.maps.Animation.DROP
-    }
-    );
+    // https://leafletjs.com/reference-1.3.0.html#marker  
+    const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng],
+      {
+        title: restaurant.name,
+        alt: restaurant.name,
+        url: DBHelper.urlForRestaurant(restaurant)
+      })
+    marker.addTo(newMap);
     return marker;
   }
+
+  // const marker = new google.maps.Marker({
+  //   position: restaurant.latlng,
+  //   title: restaurant.name,
+  //   url: DBHelper.urlForRestaurant(restaurant),
+  //   map: map,
+  //   animation: google.maps.Animation.DROP
+  // }
+  // );
+  //   return marker;
+  // }
 
 }
