@@ -169,7 +169,7 @@ class DBHelper {
    * Generate responsive image name.
    */
   static responsiveImageName(imgName, width) {
-    return this.imageUrl(imgName + "_" + width + ".jpg");
+    return this.imageUrl(imgName + "_" + width + ".webp");
   }
 
   /**
