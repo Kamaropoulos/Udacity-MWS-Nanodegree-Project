@@ -5,6 +5,7 @@ var uglifyjs = require('uglify-es');
 var composer = require('gulp-uglify/composer');
 var pump = require('pump');
 const imagemin = require('gulp-imagemin');
+const webp = require('gulp-webp');
 
 var minify = composer(uglifyjs, console);
 
@@ -40,9 +41,12 @@ gulp.task('html', () => {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('images', () => {
+gulp.task('images-compress', () => {
     return gulp.src('src/img/**')
-        .pipe(imagemin())
+        .pipe(imagemin({
+            interlaced: true,
+            progressive: true,
+            optimizationLevel: 5}))
         .pipe(gulp.dest('dist/img'));
 });
 
@@ -51,12 +55,18 @@ gulp.task('copy', () => {
         .pipe(gulp.dest('dist'));
 })
 
+gulp.task('webp', ['images-compress'], () =>
+    gulp.src('dist/img/*.jpg')
+        .pipe(webp())
+        .pipe(gulp.dest('dist/img'))
+);
+
 gulp.task('default', [
     'styles',
     'sw',
     'scripts',
     'html',
-    'images',
+    'webp',
     'copy'
 ]
 );
