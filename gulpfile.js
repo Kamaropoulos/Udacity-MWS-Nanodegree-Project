@@ -61,12 +61,22 @@ gulp.task('webp', ['images-compress'], () =>
         .pipe(gulp.dest('dist/img'))
 );
 
+gulp.task('watch', () => {
+    gulp.watch('src/css/*.css', ['styles']);
+    gulp.watch('src/js/*.js', ['scripts']);
+    gulp.watch('src/sw.js', ['sw']);
+    gulp.watch('src/*.html', ['html']);
+    gulp.watch('dist/img/*.jpg', ['webp']);
+    gulp.watch('src/manifest.json', ['copy']);
+})
+
 gulp.task('default', [
     'styles',
     'sw',
     'scripts',
     'html',
     'webp',
-    'copy'
+    'copy',
+    'watch'
 ]
 );
