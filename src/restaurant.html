@@ -47,7 +47,7 @@
 
   <!-- Beginning restaurant -->
   <section id="restaurant-container" aria-label="Restaurant Information">
-    <h1 id="restaurant-name" aria-label="Restaurant Name"></h1>
+    <h1 id="restaurant-name" aria-label="Restaurant Name"></h1><div class="favorite"><input id="heart" type="checkbox" onchange="DBHelper.updateFavorite(restaurantID, this);" /><label for="heart">❤</label></div>
     <div id="restaurant-header">
       <div id="restaurant-img-div">
         <img id="restaurant-img">

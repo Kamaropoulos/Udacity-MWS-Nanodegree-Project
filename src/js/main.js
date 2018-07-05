@@ -4,6 +4,14 @@ let restaurants,
 var newMap
 var markers = []
 
+function initImgs() {
+console.log("lazyload");
+var imgDefer = document.getElementsByTagName('img');
+for (var i=0; i<imgDefer.length; i++) {
+if(imgDefer[i].getAttribute('data-src')) {
+imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
+} } }
+
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
@@ -154,6 +162,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
     ul.append(createRestaurantHTML(restaurant));
   });
   addMarkersToMap();
+  initImgs();
 }
 
 /**
@@ -165,20 +174,28 @@ createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   if (!restaurant.photograph) {
-    image.src = "/img/no-photo.png";
+    image.src ="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+    image.dataset['src'] = "/img/no-photo.png";
     image.alt = "Image of " + restaurant.name + "restaurant was not found.";
     image.style = "background-color: transparent;";
   } else {
-    image.src = DBHelper.responsiveImageName(restaurant.photograph, "1x");
+    image.src = "data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+    image.dataset['src'] = DBHelper.responsiveImageName(restaurant.photograph, "1x");
     image.alt = "Image of " + restaurant.name + "restaurant.";
-    image.srcset = DBHelper.generateSrcSet(restaurant);
+    // image.srcset = DBHelper.generateSrcSet(restaurant);
   }
   
   li.append(image);
 
   const name = document.createElement('h2');
+  name.className = 'rName';
   name.innerHTML = restaurant.name;
   li.append(name);
+
+  const favorite = document.createElement('div');
+  favorite.className = 'favorite';
+  favorite.innerHTML = `<input id="heart${restaurant.id}" type="checkbox" onchange="DBHelper.updateFavorite(${restaurant.id}, this);" /><label for="heart${restaurant.id}">❤</label>`;
+  li.append(favorite);
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;

@@ -201,15 +201,9 @@ class DBHelper {
     return marker;
   }
 
-  // const marker = new google.maps.Marker({
-  //   position: restaurant.latlng,
-  //   title: restaurant.name,
-  //   url: DBHelper.urlForRestaurant(restaurant),
-  //   map: map,
-  //   animation: google.maps.Animation.DROP
-  // }
-  // );
-  //   return marker;
-  // }
+  static updateFavorite(id, check) {
+    console.log(id)
+    console.log(check.checked);
+  }
 
 }
