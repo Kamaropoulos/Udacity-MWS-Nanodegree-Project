@@ -158,8 +158,16 @@ resetRestaurants = (restaurants) => {
  */
 fillRestaurantsHTML = (restaurants = self.restaurants) => {
   const ul = document.getElementById('restaurants-list');
+  let i = 0;
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
+    let heart = document.getElementById(`heart${++i}`);
+    let favVal = false;
+    console.log(favVal);
+    if (restaurant.hasOwnProperty('is_favorite') && (restaurant.is_favorite == "true")) favVal = true;
+    console.log("restaurant value: " + restaurant.is_favorite);
+    console.log("calculated value: " + favVal);
+    heart.checked = favVal;
   });
   addMarkersToMap();
   initImgs();

@@ -204,6 +204,18 @@ class DBHelper {
   static updateFavorite(id, check) {
     console.log(id)
     console.log(check.checked);
-  }
 
+    fetch(`http://${window.location.hostname}:1337/restaurants/${id}/?is_favorite=${check.checked}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'text/plain'
+      }})
+      .then(res => res.json())
+      .then(res => {
+        // Check result
+        // If success, set to done
+        // Else output msg
+        console.log(res)
+      });
+  }
 }

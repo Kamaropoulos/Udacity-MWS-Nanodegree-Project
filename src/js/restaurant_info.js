@@ -95,6 +95,11 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
+  let fav = document.getElementById('heart');
+  let favVal = false;
+  if (restaurant.hasOwnProperty('is_favorite') && (restaurant.is_favorite == "true")) favVal = true;
+  fav.checked = favVal;
+
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
@@ -160,66 +165,85 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
-  ul.appendChild(createReviewForm());
 
-  var rad = document.querySelectorAll(".starR");
-  var prev = null;
-  for (var i = 0; i < rad.length; i++) {
-    rad[i].onclick = function () {
-      if (this !== prev) {
-        prev = this;
-      }
-      ratingValue = this.value;
-    };
-  }
-
-  document.querySelector("#reviewForm").addEventListener("submit", function (e) {
-    e.preventDefault();    //stop form from submitting
-
-    // Get form data
-    let data = document.querySelector("#reviewForm").serialize();
-    data.stars = ratingValue;
-
-    // Validate data
-    if (!data.reviewText || !data.reviewName || !data.stars) {
-      // Something went wrong
+  // Fill pending reviews
+  offlineRequestStoreDB.getAll().then(data => {
+    if (data.length > 1) {
+        let count = data.pop();
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                const review = data[key];
+                
+                if (review.restaurant_id == restaurantID) {
+                  ul.appendChild(createReviewHTML(review));
+                }
+            }
+        }
     }
 
-    fetch(`http://${window.location.hostname}:1337/reviews/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain'
-      },
-      body: JSON.stringify({
-        "restaurant_id": restaurantID,
-        "name": data.reviewName,
-        "rating": data.stars,
-        "comments": data.reviewText
-      })
-    }).then(res => res.json())
-      .then(res => {
-        // Check result
-        // If success, set to done
-        // Else output msg
-        console.log(res)
-      });
+    ul.appendChild(createReviewForm());
 
-      // Create new element
-      let newReview = {};
-      newReview.comments = data.reviewText;
-      newReview.createAt = new Date().getTime();
-      newReview.restaurant_id = restaurantID;
-      newReview.name = data.reviewName;
-      newReview.rating = data.stars;
-      newReview.updatedAt = newReview.createAt;
-      const ul = document.getElementById('reviews-list');
-      ul.insertBefore(createReviewHTML(newReview), ul.childNodes[ul.childNodes.length-1]);
+    var rad = document.querySelectorAll(".starR");
+    var prev = null;
+    for (var i = 0; i < rad.length; i++) {
+      rad[i].onclick = function () {
+        if (this !== prev) {
+          prev = this;
+        }
+        ratingValue = this.value;
+      };
+    }
+  
+    document.querySelector("#reviewForm").addEventListener("submit", function (e) {
+      e.preventDefault();    //stop form from submitting
+  
+      // Get form data
+      let data = document.querySelector("#reviewForm").serialize();
+      data.stars = ratingValue;
+  
+      // Validate data
+      if (!data.reviewText || !data.reviewName || !data.stars) {
+        // Something went wrong
+      }
+  
+      fetch(`http://${window.location.hostname}:1337/reviews/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        body: JSON.stringify({
+          "restaurant_id": restaurantID,
+          "name": data.reviewName,
+          "rating": data.stars,
+          "comments": data.reviewText
+        })
+      }).then(res => res.json())
+        .then(res => {
+          // Check result
+          // If success, set to done
+          // Else output msg
+          console.log(res)
+        });
+  
+        // Create new element
+        let newReview = {};
+        newReview.comments = data.reviewText;
+        newReview.createAt = new Date().getTime();
+        newReview.restaurant_id = restaurantID;
+        newReview.name = data.reviewName;
+        newReview.rating = data.stars;
+        newReview.updatedAt = newReview.createAt;
+        const ul = document.getElementById('reviews-list');
+        ul.insertBefore(createReviewHTML(newReview), ul.childNodes[ul.childNodes.length-1]);
+  
+        reviewForm.resetInput();
+  
+    });
+  
+    container.appendChild(ul);
+});
 
-      reviewForm.resetInput();
 
-  });
-
-  container.appendChild(ul);
 }
 
 HTMLElement.prototype.serialize = function () {
