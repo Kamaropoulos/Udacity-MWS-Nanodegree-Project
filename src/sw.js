@@ -18,6 +18,9 @@ self.addEventListener('install', function (event) {
         'js/idb.js',
         'js/db.js',
         'js/main.js',
+        'sw.js',
+        'js/register_sw.js',
+        'manifest.json',
         'js/dbhelper.js',
         'js/restaurant_info.js',
         'img/no-photo.png',
@@ -93,11 +96,13 @@ self.addEventListener('fetch', function (event) {
 
 function getRestaurantsFromIDB(request) {
     return restaurantsDB.getAll().then((val) => {
-        if (val) {
+        if (val && (val.length > 0)) {
+            console.log("getting restaurants from IDB");
             return new Response(JSON.stringify(val), {
                 headers: { 'Content-Type': 'application/json' }
             });
         } else {
+            console.log("fetching restaurants from network");
             return fetch(request);
         }
     });
