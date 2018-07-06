@@ -4,13 +4,13 @@ let restaurants,
 var newMap
 var markers = []
 
-function initImgs() {
-console.log("lazyload");
-var imgDefer = document.getElementsByTagName('img');
-for (var i=0; i<imgDefer.length; i++) {
-if(imgDefer[i].getAttribute('data-src')) {
-imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
-} } }
+// function initImgs() {
+// console.log("lazyload");
+// var imgDefer = document.getElementsByTagName('img');
+// for (var i=0; i<imgDefer.length; i++) {
+// if(imgDefer[i].getAttribute('data-src')) {
+// imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
+// } } }
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -19,6 +19,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
   initMap();
   fetchNeighborhoods();
   fetchCuisines();
+});
+
+window.addEventListener('load', function() {
+  function updateOnlineStatus(event) {
+    var condition = navigator.onLine ? "online" : "offline";
+
+    DBHelper.launch_toast(`You are now ${condition}!`, navigator.onLine ? "green" : "red");
+  }
+
+  window.addEventListener('online',  updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
 });
 
 /**
@@ -163,14 +174,11 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
     ul.append(createRestaurantHTML(restaurant));
     let heart = document.getElementById(`heart${++i}`);
     let favVal = false;
-    console.log(favVal);
     if (restaurant.hasOwnProperty('is_favorite') && (restaurant.is_favorite == "true")) favVal = true;
-    console.log("restaurant value: " + restaurant.is_favorite);
-    console.log("calculated value: " + favVal);
     heart.checked = favVal;
   });
   addMarkersToMap();
-  initImgs();
+  // initImgs();
 }
 
 /**
@@ -182,15 +190,15 @@ createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   if (!restaurant.photograph) {
-    image.src ="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-    image.dataset['src'] = "/img/no-photo.png";
+    // image.src ="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+    image.src = "/img/no-photo.png";
     image.alt = "Image of " + restaurant.name + "restaurant was not found.";
     image.style = "background-color: transparent;";
   } else {
-    image.src = "data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-    image.dataset['src'] = DBHelper.responsiveImageName(restaurant.photograph, "1x");
+    // image.src = "data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+    image.src = DBHelper.responsiveImageName(restaurant.photograph, "1x");
     image.alt = "Image of " + restaurant.name + "restaurant.";
-    // image.srcset = DBHelper.generateSrcSet(restaurant);
+    image.srcset = DBHelper.generateSrcSet(restaurant);
   }
   
   li.append(image);

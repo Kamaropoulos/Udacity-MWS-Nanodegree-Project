@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
   <!-- Main CSS file -->
   <link rel="stylesheet" href="css/styles.css" type="text/css">
+
+  <link rel="stylesheet" href="css/toastify.css" media="none" onload="if(media!=='all')media='all'">
+
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#252831">
   <meta name="description" content="Udacity MWS Nanodegree Project">
@@ -82,8 +85,11 @@
 
   <!-- Beginning scripts -->
   <!-- Local Restaurants DB -->
-  <script type="text/javascript" src="js/idb.js"></script>
-  <script type="text/javascript" src="js/db.js"></script>
+  <script async type="text/javascript" src="js/idb.js"></script>
+  <script async type="text/javascript" src="js/db.js"></script>
+
+  <script async defer type="text/javascript" src="js/toastify.js"></script>
+  
   <!-- Database helpers -->
   <script type="text/javascript" src="js/dbhelper.js"></script>
   <!-- Main javascript file -->

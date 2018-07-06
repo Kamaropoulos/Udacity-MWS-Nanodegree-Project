@@ -237,6 +237,10 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
         ul.insertBefore(createReviewHTML(newReview), ul.childNodes[ul.childNodes.length-1]);
   
         reviewForm.resetInput();
+
+        if (!navigator.onLine) {
+          DBHelper.launch_toast(`You are offline. Your review will be send once you go back online.`, "orange");
+        }
   
     });
   

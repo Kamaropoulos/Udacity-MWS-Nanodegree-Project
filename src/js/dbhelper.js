@@ -202,9 +202,10 @@ class DBHelper {
   }
 
   static updateFavorite(id, check) {
-    console.log(id)
-    console.log(check.checked);
-
+    if (!navigator.onLine) {
+      check.checked = !(check.checked);
+      return;
+    }
     fetch(`http://${window.location.hostname}:1337/restaurants/${id}/?is_favorite=${check.checked}`, {
       method: 'PUT',
       headers: {
@@ -212,10 +213,21 @@ class DBHelper {
       }})
       .then(res => res.json())
       .then(res => {
-        // Check result
-        // If success, set to done
-        // Else output msg
-        console.log(res)
+        // -
       });
   }
+
+  static launch_toast(message, color) {
+    let colors = {
+      "red": "linear-gradient(to right, #F00000, #DC281E)",
+      "green": "linear-gradient(to right, #56ab2f, #a8e063)",
+      "orange": "linear-gradient(to right, #f12711, #f5af19)"
+    };
+
+    Toastify({
+      text: message,
+      duration: 5000,
+      backgroundColor: colors[color],
+    }).showToast();
+}
 }

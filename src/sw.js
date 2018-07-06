@@ -15,6 +15,7 @@ self.addEventListener('install', function (event) {
         'index.html',
         'restaurant.html',
         'css/styles.css',
+        'css/toastify.css',
         'js/idb.js',
         'js/db.js',
         'js/main.js',
@@ -23,6 +24,7 @@ self.addEventListener('install', function (event) {
         'manifest.json',
         'js/dbhelper.js',
         'js/restaurant_info.js',
+        'js/toastify.js',
         'img/no-photo.png',
         'manifest.json',
         'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
@@ -32,6 +34,8 @@ self.addEventListener('install', function (event) {
     ];
     event.waitUntil(
         caches.open(staticCache).then(function (cache) {
+            fetchNewRestaurants();
+            // fetchAllReviews();
             return cache.addAll(urlsToCache);
         })
     );
@@ -65,12 +69,14 @@ self.addEventListener('fetch', function (event) {
         if (requestUrl.origin === location.origin) {
             if (requestUrl.pathname === '/') {
                 event.respondWith(caches.match('/'));
-                return;
             }
             if (requestUrl.pathname.startsWith('/img/')) {
                 event.respondWith(serveImg(event.request));
-                return;
             }
+            event.respondWith(
+                caches.match(event.request).then(function (response) {
+                    return response || fetch(event.request);
+                }))
         } else if (requestUrl.href.endsWith(':1337/restaurants')) {
             event.respondWith(getRestaurantsFromIDB(event.request));
             event.waitUntil(fetchNewRestaurants(event.request));
@@ -183,8 +189,8 @@ function calculateUpdates(oldData, newData) {
     return [idsToBeDeleted, itemsToBeAdded];
 }
 
-function fetchNewRestaurants(request) {
-    return fetch(request).then(function (networkResponse) {
+function fetchNewRestaurants() {
+    return fetch('http://localhost:1337/restaurants').then(function (networkResponse) {
         networkResponse.clone().json().then(data => {
             restaurantsDB.getAll().then((oldRestaurants) => {
                 if (oldRestaurants !== data) {
@@ -214,6 +220,38 @@ function fetchNewRestaurants(request) {
         return networkResponse;
     });
 }
+
+// function fetchAllReviews() {
+//     return fetch('http://localhost:1337/reviews').then(function (networkResponse) {
+//         networkResponse.clone().json().then(data => {
+//             reviewsDB.getAll().then((oldRestaurants) => {
+//                 if (oldRestaurants !== data) {
+//                     let idsToBeDeleted, restaurantsToBeAdded;
+//                     [idsToBeDeleted, restaurantsToBeAdded] = calculateUpdates(oldRestaurants, data);
+
+//                     if (idsToBeDeleted) {
+//                         for (const key in idsToBeDeleted) {
+//                             if (idsToBeDeleted.hasOwnProperty(key)) {
+//                                 const idToDelete = idsToBeDeleted[key];
+//                                 reviewsDB.delete(idToDelete);
+//                             }
+//                         }
+//                     }
+
+//                     if (restaurantsToBeAdded) {
+//                         for (const key in restaurantsToBeAdded) {
+//                             if (restaurantsToBeAdded.hasOwnProperty(key)) {
+//                                 const restaurantToBeAdded = restaurantsToBeAdded[key];
+//                                 reviewsDB.set(restaurantToBeAdded.id, restaurantToBeAdded);
+//                             }
+//                         }
+//                     }
+//                 }
+//             })
+//         });
+//         return networkResponse;
+//     });
+// }
 
 function fetchNewReviews(request) {
     return fetch(request).then(function (networkResponse) {
