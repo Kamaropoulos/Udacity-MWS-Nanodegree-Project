@@ -1,0 +1,36 @@
+{
+  "name": "mws-restaurant-project",
+  "version": "1.0.0",
+  "description": "---\r #### _Three Stage Course Material Project - Restaurant Reviews_",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.16.3",
+    "gulp-htmlmin": "^4.0.0",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-uglify": "^3.0.0",
+    "pump": "^3.0.0",
+    "uglify-es": "^3.3.9"
+  },
+  "devDependencies": {
+    "compression": "^1.7.2",
+    "express-minify-html": "^0.12.0",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.4.0",
+    "gulp-clean-css": "^3.9.4",
+    "gulp-js-minify": "0.0.3",
+    "gulp-webp": "^3.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kamaropoulos/mws-restaurant-stage-1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kamaropoulos/mws-restaurant-stage-1/issues"
+  },
+  "homepage": "https://github.com/Kamaropoulos/mws-restaurant-stage-1#readme"
+}
