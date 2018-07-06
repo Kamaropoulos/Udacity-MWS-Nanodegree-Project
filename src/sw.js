@@ -103,12 +103,10 @@ self.addEventListener('fetch', function (event) {
 function getRestaurantsFromIDB(request) {
     return restaurantsDB.getAll().then((val) => {
         if (val && (val.length > 0)) {
-            console.log("getting restaurants from IDB");
             return new Response(JSON.stringify(val), {
                 headers: { 'Content-Type': 'application/json' }
             });
         } else {
-            console.log("fetching restaurants from network");
             return fetch(request);
         }
     });
